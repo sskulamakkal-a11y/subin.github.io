@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Project 3 — Performance Reel | Subin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #080808;
+    --bg2: #0f0908;
+    --bg3: #1a1210;
+    --surface: #1a1a1a;
+    --border: rgba(255,255,255,0.07);
+    --accent: #FF4D1C;
+    --accent2: #F5A623;
+    --text: #f0ede8;
+    --muted: rgba(240,237,232,0.45);
+    --faint: rgba(240,237,232,0.12);
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 1000;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 48px;
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); text-decoration: none; }
+  .nav-logo span { color: var(--accent); }
+  .nav-back {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+    text-decoration: none; letter-spacing: 0.04em;
+    padding: 8px 18px; border: 1px solid var(--border); border-radius: 2px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .nav-back:hover { border-color: var(--accent); color: var(--text); background: rgba(255,77,28,0.06); }
+
+  /* CASE HEADER */
+  .case-header {
+    min-height: 32vh; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 150px 48px 48px; position: relative; overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .case-header-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 80% 20%, rgba(255,77,28,0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 15% 80%, rgba(245,166,35,0.05) 0%, transparent 60%);
+  }
+  .case-eyebrow {
+    font-family: var(--font-mono); font-size: 11px; color: var(--accent);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px; position: relative;
+  }
+  .case-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+  .case-title {
+    font-size: clamp(36px, 5.5vw, 76px); font-weight: 800; line-height: 1;
+    letter-spacing: -0.03em; margin-bottom: 16px; position: relative;
+    max-width: 900px;
+  }
+  .case-title em { color: var(--accent); font-style: normal; }
+  .case-sub {
+    font-family: var(--font-mono); font-size: 14px; color: var(--muted);
+    max-width: 520px; line-height: 1.7; position: relative;
+  }
+
+  /* ALBUM SECTION */
+  .album-section {
+    padding: 64px 48px 90px; border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 64px; align-items: start;
+  }
+
+  /* The 2x2 "album cover" collage, Apple-Music style */
+  .album-cover {
+    width: 100%; max-width: 420px; aspect-ratio: 1 / 1;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 3px; background: var(--border);
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+  }
+  .album-cell {
+    position: relative; background: var(--bg3); overflow: hidden;
+    display: block; text-decoration: none;
+  }
+  .album-cell iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: none; pointer-events: none;
+  }
+  .album-cell .cell-tag {
+    position: absolute; bottom: 8px; left: 10px; z-index: 2;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.75); background: rgba(0,0,0,0.45);
+    padding: 3px 8px; border-radius: 2px; pointer-events: none;
+  }
+  .album-cell .cell-open {
+    position: absolute; top: 8px; right: 8px; z-index: 3;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(8,8,8,0.7); border: 1px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text); text-decoration: none; font-size: 12px;
+    opacity: 0; transition: opacity 0.2s, background 0.2s;
+  }
+  .album-cell:hover .cell-open { opacity: 1; }
+  .cell-open:hover { background: var(--accent); border-color: var(--accent); color: #080808; }
+
+  .album-meta { margin-top: 24px; }
+  .album-meta-label {
+    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .album-meta-title { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 6px; }
+  .album-meta-sub { font-family: var(--font-mono); font-size: 13px; color: var(--muted); line-height: 1.7; max-width: 380px; }
+
+  /* TRACKLIST */
+  .tracklist-label {
+    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  }
+  .tracklist-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--border); }
+
+  .track-row {
+    display: flex; align-items: center; gap: 20px;
+    padding: 18px 12px; border-bottom: 1px solid var(--border);
+    text-decoration: none; color: var(--text);
+    transition: background 0.2s, padding-left 0.2s;
+    border-radius: 4px;
+  }
+  .track-row:hover { background: rgba(255,77,28,0.06); padding-left: 18px; }
+  .track-num {
+    font-family: var(--font-mono); font-size: 13px; color: var(--muted);
+    width: 24px; flex-shrink: 0;
+  }
+  .track-row:hover .track-num { color: var(--accent); }
+  .track-play {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--muted); transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .track-row:hover .track-play { border-color: var(--accent); color: var(--accent); background: rgba(255,77,28,0.08); }
+  .track-info { flex: 1; }
+  .track-name { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 3px; }
+  .track-desc { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); }
+  .track-ext {
+    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+    letter-spacing: 0.04em; flex-shrink: 0;
+  }
+
+  /* CTA */
+  .case-cta {
+    padding: 100px 48px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px;
+  }
+  .case-cta-heading { font-size: clamp(28px, 3.5vw, 44px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+  .case-cta-heading em { color: var(--accent); font-style: normal; }
+  .case-cta-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 12px;
+    padding: 14px 26px; background: var(--accent); color: #080808;
+    border: none; border-radius: 2px; text-decoration: none;
+    font-weight: 500; letter-spacing: 0.04em; transition: opacity 0.2s;
+  }
+  .case-cta-btn:hover { opacity: 0.85; }
+
+  footer {
+    padding: 28px 48px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+    flex-wrap: wrap; gap: 12px;
+  }
+
+  @media (max-width: 900px) {
+    .album-section { grid-template-columns: 1fr; }
+    .album-cover { max-width: 100%; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 18px 24px; }
+    .case-header, .album-section, .case-cta { padding-left: 24px; padding-right: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="subin_portfolio_2.html" class="nav-logo">SUBIN<span>.</span></a>
+  <a href="subin_portfolio_2.html#work" class="nav-back">← Back to Work</a>
+</nav>
+
+<!-- CASE HEADER -->
+<section class="case-header">
+  <div class="case-header-bg"></div>
+  <div class="case-eyebrow">Project 03 — Performance Ad Reel</div>
+  <h1 class="case-title">Four cuts. <em>One reel.</em></h1>
+</section>
+
+<!-- ALBUM + TRACKLIST -->
+<section class="album-section">
+  <div>
+    <div class="album-cover" id="albumCover">
+      <a class="album-cell" href="https://drive.google.com/file/d/1731lrbdIF_unpuOfVrNhMEPvwZgYTRvT/view?usp=drive_link" target="_blank" rel="noopener">
+        <iframe src="https://drive.google.com/file/d/1731lrbdIF_unpuOfVrNhMEPvwZgYTRvT/preview" allow="autoplay" tabindex="-1"></iframe>
+        <span class="cell-tag">01</span>
+        <span class="cell-open">↗</span>
+      </a>
+      <a class="album-cell" href="https://drive.google.com/file/d/13sd_hYF7meJOghTmMcZa7ff5d1X2lWMd/view?usp=drive_link" target="_blank" rel="noopener">
+        <iframe src="https://drive.google.com/file/d/13sd_hYF7meJOghTmMcZa7ff5d1X2lWMd/preview" allow="autoplay" tabindex="-1"></iframe>
+        <span class="cell-tag">02</span>
+        <span class="cell-open">↗</span>
+      </a>
+      <a class="album-cell" href="https://drive.google.com/file/d/1hSZCdegmp-7Ck_6shMNENc-uO9BVUTlg/view?usp=drive_link" target="_blank" rel="noopener">
+        <iframe src="https://drive.google.com/file/d/1hSZCdegmp-7Ck_6shMNENc-uO9BVUTlg/preview" allow="autoplay" tabindex="-1"></iframe>
+        <span class="cell-tag">03</span>
+        <span class="cell-open">↗</span>
+      </a>
+      <a class="album-cell" href="https://drive.google.com/file/d/1BKH2j2iien3vdl1xfE15QarGksXn9VxT/view?usp=drive_link" target="_blank" rel="noopener">
+        <iframe src="https://drive.google.com/file/d/1BKH2j2iien3vdl1xfE15QarGksXn9VxT/preview" allow="autoplay" tabindex="-1"></iframe>
+        <span class="cell-tag">04</span>
+        <span class="cell-open">↗</span>
+      </a>
+    </div>
+    <div class="album-meta">
+      <div class="album-meta-label">Reel</div>
+      <div class="album-meta-title">Fun Reels — 4 Cuts</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="tracklist-label">Tracklist</div>
+
+    <a class="track-row" href="https://drive.google.com/file/d/1731lrbdIF_unpuOfVrNhMEPvwZgYTRvT/view?usp=drive_link" target="_blank" rel="noopener">
+      <span class="track-num">01</span>
+      <span class="track-play">▶</span>
+      <span class="track-info">
+        <span class="track-name">Video 1</span>
+        <span class="track-desc">Compilation video / 3D tracking and VFX</span>
+      </span>
+      <span class="track-ext">Open ↗</span>
+    </a>
+
+    <a class="track-row" href="https://drive.google.com/file/d/13sd_hYF7meJOghTmMcZa7ff5d1X2lWMd/view?usp=drive_link" target="_blank" rel="noopener">
+      <span class="track-num">02</span>
+      <span class="track-play">▶</span>
+      <span class="track-info">
+        <span class="track-name">Video 2</span>
+        <span class="track-desc">Postman paper cut animation</span>
+      </span>
+      <span class="track-ext">Open ↗</span>
+    </a>
+
+    <a class="track-row" href="https://drive.google.com/file/d/1hSZCdegmp-7Ck_6shMNENc-uO9BVUTlg/view?usp=drive_link" target="_blank" rel="noopener">
+      <span class="track-num">03</span>
+      <span class="track-play">▶</span>
+      <span class="track-info">
+        <span class="track-name">Video 3</span>
+        <span class="track-desc">Motion in pictures</span>
+      </span>
+      <span class="track-ext">Open ↗</span>
+    </a>
+
+    <a class="track-row" href="https://drive.google.com/file/d/1BKH2j2iien3vdl1xfE15QarGksXn9VxT/view?usp=drive_link" target="_blank" rel="noopener">
+      <span class="track-num">04</span>
+      <span class="track-play">▶</span>
+      <span class="track-info">
+        <span class="track-name">Video 4</span>
+        <span class="track-desc">2D Jenga x Spongebob style animation</span>
+      </span>
+      <span class="track-ext">Open ↗</span>
+    </a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="case-cta">
+  <h2 class="case-cta-heading">Have a product<br>that needs to <em>move?</em></h2>
+  <a href="subin_portfolio_2.html#contact" class="case-cta-btn">Let's Talk →</a>
+</section>
+
+<footer>
+  <div>© 2024 Subin — Motion Graphics & 3D · Bangalore, India</div>
+  <a href="subin_portfolio_2.html#work" class="nav-back" style="border:none;padding:0;">← Back to all work</a>
+</footer>
+
+</body>
+</html>
